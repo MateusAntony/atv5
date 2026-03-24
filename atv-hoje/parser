@@ -1,16 +1,41 @@
-import urllib.request
+import urllib.request 
+from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
+html_final = """
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Resultados</title>
+</head>
+<body>
+"""
+
 with open("seeds.txt",'r',encoding='utf-8') as arquivo:
-    linhas = arquivo.readlines()
-    for linha in linhas:
-        print(linha)
+    for linha in arquivo:
         page = urllib.request.urlopen(linha)
-        print(linha, "depois")
         html = str(page.read().decode('utf-8'))
         soup = BeautifulSoup(html, 'lxml')
-        print("Título:", soup.title.string)
-        for img in soup.find_all('img'):
-            print("src: ", img.attrs.get("src"))
-            break
-            
+        img = soup.find('img')
+        if img and img.attrs.get("src"):
+            titulo = soup.title.string
+            print("Título:", titulo)
+            html_final += f"<h2>{titulo}</h2>\n"
+            img_src = img.attrs.get("src")
+            print("src: ", img_src)
+            if "https" in img_src:
+                html_final += f'<img src="{img_src}" width="300">\n'
+            else:
+                img_url = urljoin(linha, img_src)
+                html_final += f'<img src="{img_url}" width="300">\n'
+        html_final += "<hr>\n"
+
+html_final += """
+</body>
+</html>
+"""
+
+with open("resultado.html", "w", encoding="utf-8") as f:
+    f.write(html_final)
+
