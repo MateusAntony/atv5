@@ -1,0 +1,14 @@
+import urllib.request
+from bs4 import BeautifulSoup
+
+with open("seeds.txt",'r',encoding='utf-8') as arquivo:
+    for linha in arquivo:
+        page = urllib.request.urlopen(linha)
+        html = str(page.read().decode('utf-8'))
+        soup = BeautifulSoup(html, 'lxml')
+        print("Título:", soup.title.string)
+        for img in soup.find_all('img'):
+            try:
+                print("src: ", img.attrs.get("src"))
+            except:
+                continue
