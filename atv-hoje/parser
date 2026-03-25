@@ -25,9 +25,11 @@ with open("seeds.txt",'r',encoding='utf-8') as arquivo:
             img_src = img.attrs.get("src")
             print("src: ", img_src)
             if "https" in img_src:
-                html_final += f'<img src="{img_src}" width="300">\n'
+                html_final += f'<img src="{img_src}" width="300">\n' 
             else:
                 img_url = urljoin(linha, img_src)
+                if img_src.startswith("./"):
+                    img_src = linha.rstrip("/") + "/" + img_src.replace("./", "")
                 html_final += f'<img src="{img_url}" width="300">\n'
         html_final += "<hr>\n"
 
